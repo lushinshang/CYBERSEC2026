@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CYBERSEC 2026 議程查找</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --surface: #ffffff;
+        --surface-2: #eef3ff;
+        --border: #d8deea;
+        --text: #162033;
+        --muted: #5e6b85;
+        --accent: #1f67ff;
+        --accent-soft: #dfe9ff;
+        --chip: #f0f3f9;
+        --success: #0f8c5b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.45;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .page {
+        width: min(1080px, 100%);
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .hero {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+
+      .hero h1 {
+        margin: 0 0 6px;
+        font-size: 24px;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(245, 247, 251, 0.94);
+        backdrop-filter: blur(8px);
+        padding: 10px 0 12px;
+      }
+
+      .toolbar-inner {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .search-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 8px;
+      }
+
+      input[type="search"],
+      select {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        background: #fff;
+        color: var(--text);
+        font: inherit;
+      }
+
+      button {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        background: #fff;
+        color: var(--text);
+        font: inherit;
+        cursor: pointer;
+      }
+
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      .day-chips {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-top: 10px;
+      }
+
+      .chip {
+        flex: 0 0 auto;
+        border: 1px solid var(--border);
+        background: var(--chip);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      .chip.active {
+        background: var(--accent-soft);
+        border-color: #b7cafc;
+        color: #093dba;
+      }
+
+      details.filters {
+        margin-top: 10px;
+      }
+
+      details.filters summary {
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 12px 0 8px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .results {
+        display: grid;
+        gap: 10px;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px;
+      }
+
+      .card-top {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .meta-pill {
+        background: var(--surface-2);
+        color: #21406f;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px;
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .meta-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 12px;
+        margin: 10px 0;
+        font-size: 14px;
+      }
+
+      .meta-item span {
+        display: block;
+      }
+
+      .meta-item .label {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 2px;
+      }
+
+      .speaker-list,
+      .tag-list,
+      .link-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--chip);
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      .speaker {
+        display: inline-flex;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      details.summary-box {
+        margin-top: 10px;
+        background: #fafbfd;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 12px;
+      }
+
+      details.summary-box summary {
+        cursor: pointer;
+        color: var(--muted);
+      }
+
+      .summary-text {
+        margin-top: 8px;
+        white-space: pre-wrap;
+        font-size: 14px;
+      }
+
+      .empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 28px 16px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+
+      .loading {
+        color: var(--muted);
+      }
+
+      .status-ok {
+        color: var(--success);
+      }
+
+      @media (max-width: 720px) {
+        .page {
+          padding: 12px;
+        }
+
+        .hero h1 {
+          font-size: 21px;
+        }
+
+        .search-row {
+          grid-template-columns: 1fr;
+        }
+
+        .filters-grid,
+        .meta-list {
+          grid-template-columns: 1fr;
+        }
+
+        button,
+        input[type="search"],
+        select {
+          min-height: 44px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <section class="hero">
+        <h1>CYBERSEC 2026 議程查找</h1>
+        <p>手機友善的互動查找頁。可用關鍵字、日期、Track、場地、語言與即時翻譯條件快速篩選。</p>
+      </section>
+
+      <section class="toolbar">
+        <div class="toolbar-inner">
+          <div class="search-row">
+            <input id="searchInput" type="search" placeholder="搜尋題目、講者、單位、摘要、標籤">
+            <button id="resetButton">清除篩選</button>
+            <button id="shareButton" class="primary">分享目前條件</button>
+          </div>
+
+          <div id="dayChips" class="day-chips"></div>
+
+          <details class="filters" open>
+            <summary>更多篩選</summary>
+            <div class="filters-grid">
+              <select id="trackSelect">
+                <option value="">全部 Track</option>
+              </select>
+              <select id="venueSelect">
+                <option value="">全部場地</option>
+              </select>
+              <select id="languageSelect">
+                <option value="">全部語言</option>
+              </select>
+              <select id="sessionTypeSelect">
+                <option value="">全部 Session Type</option>
+              </select>
+            </div>
+            <div class="filters-grid">
+              <label class="toggle">
+                <input id="translateOnly" type="checkbox">
+                只看有即時翻譯
+              </label>
+              <label class="toggle">
+                <input id="summaryOnly" type="checkbox">
+                只看有摘要
+              </label>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <div class="stats">
+        <div id="statsText" class="loading">載入議程中...</div>
+        <div id="shareStatus"></div>
+      </div>
+
+      <section id="results" class="results"></section>
+    </div>
+
+    <script>
+      const state = {
+        sessions: [],
+        filtered: [],
+        filters: {
+          q: "",
+          day: "",
+          track: "",
+          venue: "",
+          language: "",
+          sessionType: "",
+          translateOnly: false,
+          summaryOnly: false,
+        },
+      };
+
+      const els = {
+        searchInput: document.getElementById("searchInput"),
+        resetButton: document.getElementById("resetButton"),
+        shareButton: document.getElementById("shareButton"),
+        dayChips: document.getElementById("dayChips"),
+        trackSelect: document.getElementById("trackSelect"),
+        venueSelect: document.getElementById("venueSelect"),
+        languageSelect: document.getElementById("languageSelect"),
+        sessionTypeSelect: document.getElementById("sessionTypeSelect"),
+        translateOnly: document.getElementById("translateOnly"),
+        summaryOnly: document.getElementById("summaryOnly"),
+        statsText: document.getElementById("statsText"),
+        shareStatus: document.getElementById("shareStatus"),
+        results: document.getElementById("results"),
+      };
+
+      function uniqueSorted(values) {
+        return [...new Set(values.filter(Boolean))].sort((a, b) =>
+          String(a).localeCompare(String(b), "zh-Hant")
+        );
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      function readQuery() {
+        const params = new URLSearchParams(location.search);
+        state.filters.q = params.get("q") || "";
+        state.filters.day = params.get("day") || "";
+        state.filters.track = params.get("track") || "";
+        state.filters.venue = params.get("venue") || "";
+        state.filters.language = params.get("lang") || "";
+        state.filters.sessionType = params.get("type") || "";
+        state.filters.translateOnly = params.get("translate") === "1";
+        state.filters.summaryOnly = params.get("summary") === "1";
+      }
+
+      function writeQuery() {
+        const params = new URLSearchParams();
+        const f = state.filters;
+        if (f.q) params.set("q", f.q);
+        if (f.day) params.set("day", f.day);
+        if (f.track) params.set("track", f.track);
+        if (f.venue) params.set("venue", f.venue);
+        if (f.language) params.set("lang", f.language);
+        if (f.sessionType) params.set("type", f.sessionType);
+        if (f.translateOnly) params.set("translate", "1");
+        if (f.summaryOnly) params.set("summary", "1");
+        const next = `${location.pathname}${params.toString() ? `?${params}` : ""}`;
+        history.replaceState(null, "", next);
+      }
+
+      function applyFilters() {
+        const f = state.filters;
+        const q = f.q.trim().toLowerCase();
+
+        state.filtered = state.sessions.filter((session) => {
+          if (f.day && session.dayKey !== f.day) return false;
+          if (f.track && session.primaryTrack !== f.track) return false;
+          if (f.venue && session.venue !== f.venue) return false;
+          if (f.language && session.language !== f.language) return false;
+          if (f.sessionType && session.sessionType !== f.sessionType) return false;
+          if (f.translateOnly && !String(session.hasTranslate).includes("有即時翻譯")) return false;
+          if (f.summaryOnly && session.summary === "未提供摘要") return false;
+
+          if (!q) return true;
+
+          const haystack = [
+            session.title,
+            session.summary,
+            session.primaryTrack,
+            ...(session.tags || []),
+            ...(session.speakers || []).flatMap((speaker) => [speaker.name, speaker.title, speaker.role]),
+          ]
+            .join("\n")
+            .toLowerCase();
+
+          return haystack.includes(q);
+        });
+
+        writeQuery();
+        render();
+      }
+
+      function renderDayChips() {
+        const days = uniqueSorted(state.sessions.map((session) => session.dayKey));
+        const chips = [
+          { label: "全部日期", value: "" },
+          ...days.map((dayKey) => {
+            const sample = state.sessions.find((session) => session.dayKey === dayKey);
+            return { label: sample ? sample.shortDateLabel : dayKey, value: dayKey };
+          }),
+        ];
+
+        els.dayChips.innerHTML = chips
+          .map((chip) => {
+            const active = state.filters.day === chip.value ? "active" : "";
+            return `<button class="chip ${active}" data-day="${escapeHtml(chip.value)}">${escapeHtml(chip.label)}</button>`;
+          })
+          .join("");
+
+        els.dayChips.querySelectorAll("[data-day]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.filters.day = button.dataset.day || "";
+            applyFilters();
+            renderDayChips();
+          });
+        });
+      }
+
+      function fillSelect(select, values, currentValue, label) {
+        select.innerHTML = [`<option value="">${label}</option>`]
+          .concat(
+            values.map(
+              (value) =>
+                `<option value="${escapeHtml(value)}"${value === currentValue ? " selected" : ""}>${escapeHtml(value)}</option>`
+            )
+          )
+          .join("");
+      }
+
+      function renderFilters() {
+        fillSelect(
+          els.trackSelect,
+          uniqueSorted(state.sessions.map((session) => session.primaryTrack)),
+          state.filters.track,
+          "全部 Track"
+        );
+        fillSelect(
+          els.venueSelect,
+          uniqueSorted(state.sessions.map((session) => session.venue)),
+          state.filters.venue,
+          "全部場地"
+        );
+        fillSelect(
+          els.languageSelect,
+          uniqueSorted(state.sessions.map((session) => session.language)),
+          state.filters.language,
+          "全部語言"
+        );
+        fillSelect(
+          els.sessionTypeSelect,
+          uniqueSorted(state.sessions.map((session) => session.sessionType)),
+          state.filters.sessionType,
+          "全部 Session Type"
+        );
+
+        els.searchInput.value = state.filters.q;
+        els.translateOnly.checked = state.filters.translateOnly;
+        els.summaryOnly.checked = state.filters.summaryOnly;
+      }
+
+      function renderCards() {
+        if (state.filtered.length === 0) {
+          els.results.innerHTML = '<div class="empty">找不到符合條件的議程。</div>';
+          return;
+        }
+
+        els.results.innerHTML = state.filtered
+          .map((session) => {
+            const speakers = (session.speakers || [])
+              .map(
+                (speaker) =>
+                  `<span class="speaker">${escapeHtml([speaker.role, speaker.name, speaker.title].join("｜"))}</span>`
+              )
+              .join("");
+
+            const tags = (session.tags || [])
+              .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
+              .join("");
+
+            const links = [
+              `<a class="tag" href="${escapeHtml(session.url)}" target="_blank" rel="noreferrer">官方議程頁</a>`,
+              ...(session.slideLinks || []).map(
+                (link) => `<a class="tag" href="${escapeHtml(link)}" target="_blank" rel="noreferrer">簡報</a>`
+              ),
+              ...(session.webinarLink
+                ? [`<a class="tag" href="${escapeHtml(session.webinarLink)}" target="_blank" rel="noreferrer">線上觀看</a>`]
+                : []),
+            ].join("");
+
+            const summaryClosed = session.summary === "未提供摘要" ? " open" : "";
+
+            return `
+              <article class="card">
+                <div class="card-top">
+                  <span class="meta-pill">${escapeHtml(session.shortDateLabel)}</span>
+                  <span class="meta-pill">${escapeHtml(session.timeRange)}</span>
+                  <span class="meta-pill">${escapeHtml(session.primaryTrack)}</span>
+                </div>
+                <h2>${escapeHtml(session.title)}</h2>
+                <div class="meta-list">
+                  <div class="meta-item">
+                    <span class="label">場地</span>
+                    <span>${escapeHtml(session.venue)}</span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="label">語言 / 即時翻譯</span>
+                    <span>${escapeHtml(session.language)} / ${escapeHtml(session.hasTranslate)}</span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="label">Session Type</span>
+                    <span>${escapeHtml(session.sessionType)}</span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="label">難度</span>
+                    <span>${escapeHtml(session.difficulty)}</span>
+                  </div>
+                </div>
+                <div class="speaker-list">${speakers}</div>
+                <div class="tag-list">${tags || '<span class="tag">未標示 Tags</span>'}</div>
+                <details class="summary-box"${summaryClosed}>
+                  <summary>摘要</summary>
+                  <div class="summary-text">${escapeHtml(session.summary)}</div>
+                </details>
+                <div class="link-list">${links}</div>
+              </article>
+            `;
+          })
+          .join("");
+      }
+
+      function renderStats() {
+        const total = state.sessions.length;
+        const filtered = state.filtered.length;
+        els.statsText.textContent = `顯示 ${filtered} / ${total} 場`;
+        els.statsText.className = filtered ? "status-ok" : "";
+      }
+
+      function render() {
+        renderStats();
+        renderCards();
+      }
+
+      function bindEvents() {
+        els.searchInput.addEventListener("input", (event) => {
+          state.filters.q = event.target.value;
+          applyFilters();
+        });
+
+        els.trackSelect.addEventListener("change", (event) => {
+          state.filters.track = event.target.value;
+          applyFilters();
+        });
+
+        els.venueSelect.addEventListener("change", (event) => {
+          state.filters.venue = event.target.value;
+          applyFilters();
+        });
+
+        els.languageSelect.addEventListener("change", (event) => {
+          state.filters.language = event.target.value;
+          applyFilters();
+        });
+
+        els.sessionTypeSelect.addEventListener("change", (event) => {
+          state.filters.sessionType = event.target.value;
+          applyFilters();
+        });
+
+        els.translateOnly.addEventListener("change", (event) => {
+          state.filters.translateOnly = event.target.checked;
+          applyFilters();
+        });
+
+        els.summaryOnly.addEventListener("change", (event) => {
+          state.filters.summaryOnly = event.target.checked;
+          applyFilters();
+        });
+
+        els.resetButton.addEventListener("click", () => {
+          state.filters = {
+            q: "",
+            day: "",
+            track: "",
+            venue: "",
+            language: "",
+            sessionType: "",
+            translateOnly: false,
+            summaryOnly: false,
+          };
+          renderFilters();
+          renderDayChips();
+          applyFilters();
+        });
+
+        els.shareButton.addEventListener("click", async () => {
+          const shareUrl = location.href;
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            els.shareStatus.textContent = "已複製分享連結";
+            els.shareStatus.className = "status-ok";
+          } catch {
+            els.shareStatus.textContent = shareUrl;
+            els.shareStatus.className = "";
+          }
+        });
+      }
+
+      async function init() {
+        readQuery();
+        bindEvents();
+
+        const response = await fetch("./agenda.json", { cache: "no-store" });
+        state.sessions = await response.json();
+
+        renderFilters();
+        renderDayChips();
+        applyFilters();
+      }
+
+      init().catch((error) => {
+        els.statsText.textContent = "載入失敗";
+        els.results.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+      });
+    </script>
+  </body>
+</html>
