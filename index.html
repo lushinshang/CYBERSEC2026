@@ -6,17 +6,44 @@
     <title>CYBERSEC 2026 議程查找</title>
     <style>
       :root {
-        color-scheme: light;
-        --bg: #f5f7fb;
-        --surface: #ffffff;
-        --surface-2: #eef3ff;
-        --border: #d8deea;
-        --text: #162033;
-        --muted: #5e6b85;
-        --accent: #1f67ff;
-        --accent-soft: #dfe9ff;
-        --chip: #f0f3f9;
-        --success: #0f8c5b;
+        color-scheme: light dark;
+        /* 護眼淺色：暖奶油底色，降低藍光與高對比刺激 */
+        --bg: #f5f0e4;
+        --surface: #faf6ed;
+        --surface-2: #ede8d8;
+        --border: #d4c9b0;
+        --text: #2c2416;
+        --muted: #7a6a50;
+        --accent: #1a5fc8;
+        --accent-soft: #dde8f8;
+        --accent-active: #0a3a9e;
+        --accent-border: #a8c0f0;
+        --meta-text: #1a3a68;
+        --speaker-bg: #f2ece0;
+        --chip: #ede8dc;
+        --success: #1a7a50;
+        --toolbar-bg: rgba(245, 240, 228, 0.94);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          /* 護眼深色：暖棕黑底，避免冷灰黑造成的藍光偏移 */
+          --bg: #1a1812;
+          --surface: #22201a;
+          --surface-2: #2a2820;
+          --border: #3a3528;
+          --text: #e8e0cc;
+          --muted: #a09278;
+          --accent: #7aabff;
+          --accent-soft: #1e2a42;
+          --accent-active: #a8c8ff;
+          --accent-border: #3a5080;
+          --meta-text: #a8c0e8;
+          --speaker-bg: #2a2820;
+          --chip: #2a2820;
+          --success: #4dc98a;
+          --toolbar-bg: rgba(26, 24, 18, 0.94);
+        }
       }
 
       * {
@@ -65,7 +92,7 @@
         position: sticky;
         top: 0;
         z-index: 10;
-        background: rgba(245, 247, 251, 0.94);
+        background: var(--toolbar-bg);
         backdrop-filter: blur(8px);
         padding: 10px 0 12px;
       }
@@ -89,7 +116,7 @@
         border: 1px solid var(--border);
         border-radius: 8px;
         padding: 12px 14px;
-        background: #fff;
+        background: var(--surface);
         color: var(--text);
         font: inherit;
       }
@@ -98,7 +125,7 @@
         border: 1px solid var(--border);
         border-radius: 8px;
         padding: 12px 14px;
-        background: #fff;
+        background: var(--surface);
         color: var(--text);
         font: inherit;
         cursor: pointer;
@@ -108,6 +135,11 @@
         background: var(--accent);
         border-color: var(--accent);
         color: #fff;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
       }
 
       .day-chips {
@@ -129,8 +161,8 @@
 
       .chip.active {
         background: var(--accent-soft);
-        border-color: #b7cafc;
-        color: #093dba;
+        border-color: var(--accent-border);
+        color: var(--accent-active);
       }
 
       details.filters {
@@ -189,7 +221,7 @@
 
       .meta-pill {
         background: var(--surface-2);
-        color: #21406f;
+        color: var(--meta-text);
         border-radius: 999px;
         padding: 4px 10px;
         font-size: 12px;
@@ -237,18 +269,81 @@
         font-size: 12px;
       }
 
+      .link-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 12px;
+        text-decoration: none;
+      }
+
+      .link-tag:hover {
+        text-decoration: underline;
+      }
+
       .speaker {
         display: inline-flex;
-        background: #f8fafc;
+        align-items: center;
+        gap: 8px;
+        background: var(--speaker-bg);
         border: 1px solid var(--border);
         border-radius: 8px;
         padding: 6px 10px;
         font-size: 12px;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .speaker:hover {
+        border-color: var(--accent);
+      }
+
+      .speaker-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: var(--chip);
+      }
+
+      .speaker-avatar-fallback {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .speaker-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+
+      .speaker-name {
+        font-weight: 600;
+        font-size: 13px;
+      }
+
+      .speaker-meta {
+        color: var(--muted);
+        font-size: 11px;
       }
 
       details.summary-box {
         margin-top: 10px;
-        background: #fafbfd;
+        background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 8px;
         padding: 10px 12px;
@@ -360,7 +455,7 @@
         <div id="shareStatus"></div>
       </div>
 
-      <section id="results" class="results"></section>
+      <section id="results" class="results" aria-live="polite" aria-atomic="false"></section>
     </div>
 
     <script>
@@ -405,7 +500,12 @@
         return String(text)
           .replaceAll("&", "&amp;")
           .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;");
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function safeUrl(url) {
+        return /^https?:\/\//i.test(String(url)) ? url : "#";
       }
 
       function readQuery() {
@@ -460,7 +560,8 @@
             .join("\n")
             .toLowerCase();
 
-          return haystack.includes(q);
+          const tokens = q.split(/\s+/).filter(Boolean);
+          return tokens.every((token) => haystack.includes(token));
         });
 
         writeQuery();
@@ -479,8 +580,8 @@
 
         els.dayChips.innerHTML = chips
           .map((chip) => {
-            const active = state.filters.day === chip.value ? "active" : "";
-            return `<button class="chip ${active}" data-day="${escapeHtml(chip.value)}">${escapeHtml(chip.label)}</button>`;
+            const isActive = state.filters.day === chip.value;
+            return `<button class="chip ${isActive ? "active" : ""}" data-day="${escapeHtml(chip.value)}" aria-pressed="${isActive}">${escapeHtml(chip.label)}</button>`;
           })
           .join("");
 
@@ -544,10 +645,16 @@
         els.results.innerHTML = state.filtered
           .map((session) => {
             const speakers = (session.speakers || [])
-              .map(
-                (speaker) =>
-                  `<span class="speaker">${escapeHtml([speaker.role, speaker.name, speaker.title].join("｜"))}</span>`
-              )
+              .map((speaker) => {
+                const avatar = speaker.photo
+                  ? `<img class="speaker-avatar" src="${escapeHtml(safeUrl(speaker.photo))}" alt="${escapeHtml(speaker.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                  + `<span class="speaker-avatar-fallback" style="display:none">${escapeHtml(speaker.name.charAt(0))}</span>`
+                  : `<span class="speaker-avatar-fallback">${escapeHtml(speaker.name.charAt(0))}</span>`;
+                const inner = `${avatar}<span class="speaker-info"><span class="speaker-name">${escapeHtml(speaker.name)}</span><span class="speaker-meta">${escapeHtml(speaker.role)} · ${escapeHtml(speaker.title)}</span></span>`;
+                return speaker.speakerUrl
+                  ? `<a class="speaker" href="${escapeHtml(safeUrl(speaker.speakerUrl))}" target="_blank" rel="noreferrer">${inner}</a>`
+                  : `<span class="speaker">${inner}</span>`;
+              })
               .join("");
 
             const tags = (session.tags || [])
@@ -555,16 +662,16 @@
               .join("");
 
             const links = [
-              `<a class="tag" href="${escapeHtml(session.url)}" target="_blank" rel="noreferrer">官方議程頁</a>`,
+              `<a class="link-tag" href="${escapeHtml(safeUrl(session.url))}" target="_blank" rel="noreferrer">官方議程頁</a>`,
               ...(session.slideLinks || []).map(
-                (link) => `<a class="tag" href="${escapeHtml(link)}" target="_blank" rel="noreferrer">簡報</a>`
+                (link) => `<a class="link-tag" href="${escapeHtml(safeUrl(link))}" target="_blank" rel="noreferrer">簡報</a>`
               ),
               ...(session.webinarLink
-                ? [`<a class="tag" href="${escapeHtml(session.webinarLink)}" target="_blank" rel="noreferrer">線上觀看</a>`]
+                ? [`<a class="link-tag" href="${escapeHtml(safeUrl(session.webinarLink))}" target="_blank" rel="noreferrer">線上觀看</a>`]
                 : []),
             ].join("");
 
-            const summaryClosed = session.summary === "未提供摘要" ? " open" : "";
+            const summaryClosed = session.summary !== "未提供摘要" ? " open" : "";
 
             return `
               <article class="card">
@@ -617,10 +724,13 @@
         renderCards();
       }
 
+      let searchDebounce;
+
       function bindEvents() {
         els.searchInput.addEventListener("input", (event) => {
           state.filters.q = event.target.value;
-          applyFilters();
+          clearTimeout(searchDebounce);
+          searchDebounce = setTimeout(applyFilters, 200);
         });
 
         els.trackSelect.addEventListener("change", (event) => {
@@ -679,6 +789,10 @@
             els.shareStatus.textContent = shareUrl;
             els.shareStatus.className = "";
           }
+          setTimeout(() => {
+            els.shareStatus.textContent = "";
+            els.shareStatus.className = "";
+          }, 2000);
         });
       }
 
@@ -686,7 +800,8 @@
         readQuery();
         bindEvents();
 
-        const response = await fetch("./agenda.json", { cache: "no-store" });
+        const response = await fetch("./agenda.json");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         state.sessions = await response.json();
 
         renderFilters();
