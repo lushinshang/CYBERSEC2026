@@ -420,7 +420,7 @@
 
           <div id="dayChips" class="day-chips"></div>
 
-          <details class="filters" open>
+          <details class="filters" id="filtersDetails" open>
             <summary>更多篩選</summary>
             <div class="filters-grid">
               <select id="trackSelect">
@@ -487,6 +487,7 @@
         summaryOnly: document.getElementById("summaryOnly"),
         statsText: document.getElementById("statsText"),
         shareStatus: document.getElementById("shareStatus"),
+        filtersDetails: document.getElementById("filtersDetails"),
         results: document.getElementById("results"),
       };
 
@@ -799,6 +800,17 @@
       async function init() {
         readQuery();
         bindEvents();
+
+        // 手機螢幕預設折疊「更多篩選」，避免 sticky toolbar 佔去太多畫面高度。
+        // 若 URL 帶有 track/venue/lang/type/translate/summary 參數，表示使用者是從分享連結進入，
+        // 此時保持展開讓使用者看到目前生效的篩選條件。
+        if (window.innerWidth <= 720) {
+          const f = state.filters;
+          const hasAdvancedFilter = f.track || f.venue || f.language || f.sessionType || f.translateOnly || f.summaryOnly;
+          if (!hasAdvancedFilter) {
+            els.filtersDetails.removeAttribute("open");
+          }
+        }
 
         const response = await fetch("./agenda.json");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
